@@ -1,6 +1,8 @@
 Pull requests added:
 1)colinskow/superlogin - 73, 74, 95, 114, 144, 147, 157, 160, 163, 178, 180, 191
 
+Issues resolved:
+1) colinskow/superlogin - 46, 
 # SuperLogin
 
 [![Build Status](https://travis-ci.org/colinskow/superlogin.png?branch=master)](https://travis-ci.org/colinskow/superlogin)
@@ -72,12 +74,14 @@ Then...
 
 ```javascript
 var express = require('express');
+var helmet = require('helmet');
 var http = require('http');
 var bodyParser = require('body-parser');
 var logger = require('morgan');
 var SuperLogin = require('superlogin');
 
 var app = express();
+app.use(helmet());
 app.set('port', process.env.PORT || 3000);
 app.use(logger('dev'));
 app.use(bodyParser.json());
