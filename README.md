@@ -1,8 +1,9 @@
 Pull requests added:
-1)colinskow/superlogin - 73, 74, 95, 114, 144, 147, 157, 160, 163, 178, 180, 191
+1) colinskow/superlogin - 
 
 Issues resolved:
-1) colinskow/superlogin - 46, 
+1) colinskow/superlogin - 46, 59
+
 # SuperLogin
 
 [![Build Status](https://travis-ci.org/colinskow/superlogin.png?branch=master)](https://travis-ci.org/colinskow/superlogin)
@@ -23,6 +24,8 @@ For issues and feature requests visit the [issue tracker](https://github.com/col
 - [Quick Start](#quick-start)
 - [Securing Your Routes](#securing-your-routes)
 - [Database Security](#database-security)
+- [Secure HTTP Headers](#headers-security)
+- [Brute Force Protection/Requests Rate Limit](#rate-limit)
 - [CouchDB Document Update Validation](#couchdb-document-update-validation)
 - [Adding Providers](#adding-providers)
 - [Adding additional fields](#adding-additional-fields)
@@ -192,6 +195,59 @@ If you are using [Cloudant](https://cloudant.com), then your databases are secur
 If, however, you are using regular CouchDB, then Admin Party is default and all your databases are readable and writable by the public until you implement the correct security measures. It is your responsibility to study up on [best security practices](http://blog.mattwoodward.com/2012/03/definitive-guide-to-couchdb.html) and apply them. To block anonymous reads across all databases you can set `require_valid_user` to `true` under `[couch_httpd_auth]` in your CouchDB config.
 
 SuperLogin also allows you to specify default `_security` roles for members and admins in the `userDBs` section of your config file. See [`config.example.js`](https://github.com/colinskow/superlogin/blob/master/config.example.js) for details.
+
+## Secure HTTP Headers
+
+There are some security-related HTTP headers that your site should set. These headers are:
+
+- Strict-Transport-Security enforces secure (HTTP over SSL/TLS) connections to the server
+- X-Frame-Options provides clickjacking protection
+- X-XSS-Protection enables the Cross-site scripting (XSS) filter built into most recent web browsers
+- X-Content-Type-Options prevents browsers from MIME-sniffing a response away from the declared content-type
+- Content-Security-Policy prevents a wide range of attacks, including Cross-site scripting and other cross-site injections
+
+In Node.js it is easy to set these using the Helmet module:
+
+```js
+var express = require('express');
+var helmet = require('helmet');
+
+var app = express();
+app.use(helmet());
+```
+
+## Brute Force Protection/Requests Rate Limit
+
+Brute forcing is the systematically enumerating of all possible candidates a solution and checking whether each candidate satisfies the problem's statement. In web applications a login endpoint can be the perfect candidate for this.
+
+To protect your applications from these kind of attacks you have to implement some kind of rate-limiting.
+
+I used https://github.com/nfriedly/express-rate-limit with https://github.com/wyattjoh/rate-limit-redis 
+
+```js
+var BPromise = require('bluebird');
+var redis = BPromise.promisifyAll(require('redis'));
+var RateLimit = require('express-rate-limit');
+var RedisStore = require('rate-limit-redis');
+
+// Create requests limitier.
+// Insert this after code with configuration and initialization of SuperLogin
+// WORKS ONLY IF REDIS IS USED AND CONFIGURED IN SUPERLOGIN CONFIG
+var limiter = new RateLimit({
+  store: new RedisStore({
+    expiry: 15*60*1000, // 15 minutes
+    prefix: 'rl:',
+    client: redis.createClient(config.session.redis)    
+  }),
+  windowMs: 15*60*1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  delayMs: 0, // disable delaying - full speed until the max limit is reached
+  message: 'Too many requests from this IP address',
+  headers: true //Send custom rate limit header with limit and remaining
+});
+// Apply to all requests
+app.use(limiter);
+```
 
 ## CouchDB Document Update Validation
 
