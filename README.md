@@ -1,3 +1,6 @@
+Pull requests added:
+1)colinskow/superlogin - 73, 74, 95, 114, 144, 147, 157, 160, 163, 178, 180, 191
+
 # SuperLogin
 
 [![Build Status](https://travis-ci.org/colinskow/superlogin.png?branch=master)](https://travis-ci.org/colinskow/superlogin)
@@ -190,6 +193,18 @@ SuperLogin also allows you to specify default `_security` roles for members and 
 
 CouchDB can save your API a lot of traffic by handling both reads and writes. CouchDB provides the [validate_doc_update function](http://guide.couchdb.org/draft/validation.html) to approve or disapprove what gets written. However, since your CouchDB users are temporary random API keys, you have no idea which user is requesting to write. SuperLogin has inserted the original `user_id` into `userCtx.roles[0]`, prefixed by `user:` (e.g. `user:superman`).
 
+Example design doc:
+```js
+module.exports = {
+  validator: {
+    validate_doc_update: function (newDoc, oldDoc, userCtx) {
+      if (!newDoc.name) {
+        throw({forbidden: 'doc.name is required'});
+      }
+    }.toString()
+  }
+};
+```
 If you are using Cloudant authentication, the prefixed `user_id` is inserted as the first item on the `permissions` array, which will also appear inside `roles` in your `userCtx` object. You will also find all the `roles` from your user doc here.
 
 If you wish to give a user special Cloudant permissions other than the ones specified in your config, you can edit the user doc from the `sl-users` database and under `personalDBs` add an array called `permissions` under the corresponding DB for that user.
@@ -347,6 +362,9 @@ This will invoke the client `access_token` strategy for the specified provider i
 ##### `POST /link/{provider}/token`
 This will link additional providers to an already authenticated user using the client `access_token` strategy.
 
+##### `POST /update/{fieldId}`
+This will update custom fields.
+
 ## Event Emitter
 
 SuperLogin also acts as an [event emitter](https://nodejs.org/api/events.html), which allows you to receive notifications when important things happen.
@@ -363,7 +381,6 @@ Here is a full list of the events that SuperLogin emits, and parameters provided
 - `signup`: (`userDoc`, `provider`)
 - `login`: (`newSession`, `provider`)
 - `refresh`: (`newSession`)
-- `signup`: (`userDoc`, `provider`)
 - `password-reset`: (`userDoc`)
 - `password-change`: (`userDoc`)
 - `forgot-password`: (`userDoc`)

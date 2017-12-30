@@ -7,8 +7,8 @@ module.exports = {
   dbServer: {
     protocol: process.env.COUCH_PROTOCOL || 'http://',
     host:     process.env.COUCH_HOST     || 'localhost:5984',
-    user:     process.env.COUCH_USER     || '',
-    password: process.env.COUCH_PASS     || '',
+    user:     process.env.COUCH_USER     || 'admin',
+    password: process.env.COUCH_PASS     || 'admin',
     userDB:      'sl_test-users',
     couchAuthDB: 'sl_test-keys'
   },
@@ -20,7 +20,14 @@ module.exports = {
     sendConfirmEmail: true
   },
   session: {
-    adapter: 'redis'
+    adapter: 'redis',
+    redis: {
+      // If url is supplied, port and host will be ignored
+      port: 19918,
+      host: 'redis-19918.c1.us-central1-2.gce.cloud.redislabs.com',
+      // If a UNIX domain socket is specified, port, host and url will be ignored
+      password: 'pass4redis'
+    }
   },
   mailer: {
     fromEmail: 'me@example.com'
