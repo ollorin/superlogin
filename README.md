@@ -1,5 +1,5 @@
 Pull requests added:
-1) colinskow/superlogin - 
+1) colinskow/superlogin - 73, 74, 95, 114, 144, 147, 157, 160, 163, 178, 180, 191
 
 Issues resolved:
 1) colinskow/superlogin - 46, 59
@@ -24,8 +24,8 @@ For issues and feature requests visit the [issue tracker](https://github.com/col
 - [Quick Start](#quick-start)
 - [Securing Your Routes](#securing-your-routes)
 - [Database Security](#database-security)
-- [Secure HTTP Headers](#headers-security)
-- [Brute Force Protection/Requests Rate Limit](#rate-limit)
+- [Secure HTTP Headers](#secure-http-headers)
+- [Brute Force Protection/Requests Rate Limit](#rute-force-protectionrequests-rate-limit)
 - [CouchDB Document Update Validation](#couchdb-document-update-validation)
 - [Adding Providers](#adding-providers)
 - [Adding additional fields](#adding-additional-fields)
