@@ -1,8 +1,5 @@
 Pull requests added:
-1) colinskow/superlogin - 73, 74, 95, 114, 144, 147, 157, 160, 163, 178, 180, 191
-
-Issues resolved:
-1) colinskow/superlogin - 46, 59
+colinskow/superlogin - 73, 74, 95, 114, 144, 147, 157, 160, 163, 178, 180, 191
 
 # SuperLogin
 
